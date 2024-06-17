@@ -102,8 +102,6 @@ func SysInfo() (map[string]interface{}, error) {
 		}
 	}
 
-	// systemInfo := fmt.Sprintf("Manufacturer:\t%s\n\tSerial:\t%s\nCPU\n\tModel:\t%s\n\tCount:\t%v\n\tCores:\t%d\nDrive:\n\t\t%v", manu, serial, cpuModel, cpuCount, cpuCores, hdd.Items[0])
-
 	boxProps := make(map[string]interface{})
 	boxProps["title"] = "System Info"
 	boxProps["body"] = systemInfo
