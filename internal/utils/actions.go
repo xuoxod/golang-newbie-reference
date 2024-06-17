@@ -185,17 +185,17 @@ func Sleep(seconds int) {
 /*
 	 Splash: Create a box with text and title in the console
 	 @Param: Map[string]interface
+	 	Map Properties:
+			title: string
+			titlecolor: string
+			position: string
+			message: string
+			type: string
+			boxcolor: string
+			xcoord: int
+			ycoord: int
+			text wrap: bool
 	 @return: None
-	 @Map Properties:
-		title: string
-		titlecolor: string
-		position: string
-		message: string
-		type: string
-		boxcolor: string
-		xcoord: int
-		ycoord: int
-		text wrap: bool
 */
 func Splash(boxProperties map[string]interface{}) {
 	// Box properties

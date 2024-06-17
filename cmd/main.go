@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"xuoxod/adminhelper/internal/consolemessages"
@@ -43,22 +44,21 @@ var flags []cli.Flag = []cli.Flag{
 }
 var commands []*cli.Command = []*cli.Command{
 	{
-		Name:    "groups",
-		Aliases: []string{"g"},
-		Usage:   "list a user's groups",
+		Name:    "system",
+		Aliases: []string{"sys", "s"},
+		Usage:   "display system's hardware",
 		BashComplete: func(*cli.Context) {
 			consolemessages.CustomMessage("\nBash complete", 240, 240, 50)
 		},
 		Before: func(*cli.Context) error {
-			boxProps := make(map[string]interface{})
-			boxProps["title"] = "Groups Command"
-			boxProps["body"] = "This function is called before"
-			utils.Splash(boxProps)
-			// consolemessages.CustomMessage("\nBefore", 240, 240, 50)
+			uid := os.Getuid()
+
+			if uid != 0 {
+				return errors.New("Must run this program as Admin")
+			}
 			return nil
 		},
 		After: func(*cli.Context) error {
-			consolemessages.CustomMessage("\nAfter", 240, 240, 50)
 			return nil
 		},
 		Action: func(cCtx *cli.Context) error {
@@ -67,16 +67,23 @@ var commands []*cli.Command = []*cli.Command{
 
 			switch numArgs {
 			case 0:
-				consolemessages.CustomMessage("\nMissing arguments", 255, 110, 110)
+				sysInfo, err := utils.SysInfo()
+
+				if err != nil {
+					fmt.Println(err.Error())
+					return nil
+				}
+
+				utils.Splash(sysInfo)
 
 			case 2:
-				arg1 := cCtx.Args().Get(0)
-				arg2 := cCtx.Args().Get(1)
-				consolemessages.CustomMessage(fmt.Sprintf("Arg 1:\t%s\nArg 2:\t%s\n", arg1, arg2), 222, 222, 222)
-				consolemessages.CustomMessage("Running Program ...", 110, 255, 110)
+				// arg1 := cCtx.Args().Get(0)
+				// arg2 := cCtx.Args().Get(1)
+				// consolemessages.CustomMessage(fmt.Sprintf("Arg 1:\t%s\nArg 2:\t%s\n", arg1, arg2), 222, 222, 222)
+				// consolemessages.CustomMessage("Running Program ...", 110, 255, 110)
 
 			default:
-				consolemessages.CustomMessage("\nToo many arguments", 240, 240, 50)
+				// consolemessages.CustomMessage("\nToo many arguments", 240, 240, 50)
 			}
 
 			return nil
@@ -138,11 +145,6 @@ const InternalErrorLimit int = 2
 
 func main() {
 	utils.ClearScreen()
-	// consolemessages.CustomMessage("\t   Starting Up ...\n\n", 190, 250, 190)
-	// Box := box.New(box.Config{Px: 2, Py: 5, Type: "Single", Color: "Cyan"})
-	// Box.Print("Box CLI Maker", "Highly Customized Terminal Box Maker")
-
-	// splash()
 
 	app := &cli.App{
 		EnableBashCompletion: true,
@@ -156,18 +158,9 @@ func main() {
 
 	if err := app.Run(os.Args); err != nil {
 		// log.Fatal(err)
-		consolemessages.CustomMessage("Error happend at program start", 190, 250, 180)
-		consolemessages.CustomMessage(fmt.Sprintf("\t%v\n\n", err.Error()), 240, 100, 155)
+		consolemessages.CustomMessage(fmt.Sprintf("\t%v\n", err.Error()), 250, 88, 88)
 	}
 }
-
-/* func splash(title, body string) {
-	boxConfig := box.Config{Px: 5, Py: 2, Type: "Round", Color: "Cyan", AllowWrapping: true, TitlePos: "Top", TitleColor: "White"}
-
-	Box := box.New(boxConfig)
-
-	Box.Print(title, body)
-} */
 
 func actionHandler(cCtx *cli.Context) error {
 	cmdArgs := cCtx.NArg()
