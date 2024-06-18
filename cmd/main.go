@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 	"xuoxod/adminhelper/internal/consolemessages"
 	"xuoxod/adminhelper/internal/utils"
 
@@ -44,8 +45,8 @@ var flags []cli.Flag = []cli.Flag{
 }
 var commands []*cli.Command = []*cli.Command{
 	{
-		Name:    "system",
-		Aliases: []string{"sys", "s"},
+		Name:    "hardware",
+		Aliases: []string{"hw"},
 		Usage:   "display system's hardware",
 		BashComplete: func(*cli.Context) {
 			consolemessages.CustomMessage("\nBash complete", 240, 240, 50)
@@ -88,27 +89,26 @@ var commands []*cli.Command = []*cli.Command{
 
 			return nil
 		},
-		Category: "User account activity:",
+		Category: "System Information",
 	},
 	{
-		Name:    "lock",
-		Aliases: []string{"l"},
-		Usage:   "lock user's account",
+		Name:    "dmi",
+		Aliases: []string{"d"},
+		Usage:   "print dmi info",
 		Action: func(cCtx *cli.Context) error {
 			// fmt.Println("completed task: ", cCtx.Args().First())
 			var numArgs int = cCtx.NArg()
 
 			switch numArgs {
 			case 0:
-				consolemessages.CustomMessage("\nMissing arguments", 255, 110, 110)
+				consolemessages.CustomMessage("\nThis command expects an argument", 255, 110, 110)
 
 			case 1:
-				arg := cCtx.Args().Get(0)
-				consolemessages.CustomMessage(fmt.Sprintf("Arg :\t%s\n", arg), 222, 222, 222)
-				consolemessages.CustomMessage("Running Program ...", 110, 255, 110)
+				arg := strings.TrimSpace(strings.ToLower(cCtx.Args().Get(0)))
+				utils.PrintSysInfo(arg)
 
 			default:
-				consolemessages.CustomMessage("\nAn error ocurred", 220, 220, 140)
+				consolemessages.CustomMessage("\nUnexpected arguments", 220, 220, 140)
 			}
 			return nil
 		},
